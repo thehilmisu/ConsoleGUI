@@ -1,15 +1,18 @@
-#include "ConsoleHandler.h"
+#include "DirectoryHandler.h"
 #include <iostream>
 
-int main() {
-    ConsoleHandler consoleHandler;
+int main() 
+{
+    DirectoryHandler directoryHandler;
     std::string homeDir = getenv("HOME");
 
-    if (homeDir.empty()) {
+    if (homeDir.empty()) 
+    {
         std::cerr << "Unable to determine the home directory." << std::endl;
         return 1;
     }
 
-    consoleHandler.navigate(homeDir);
+    directoryHandler.navigate(homeDir);
+    
     return 0;
 }

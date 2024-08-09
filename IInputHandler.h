@@ -3,7 +3,8 @@
 
 #include <string>
 
-class IInputHandler {
+class IInputHandler 
+{
 public:
     virtual ~IInputHandler() = default;
 
@@ -11,7 +12,7 @@ public:
     virtual char getKeyPress() = 0;
 
     // Reads a line of input from the user
-    virtual std::string getLine() = 0;
+    //virtual std::string getLine() = 0;
 };
 
 #endif // IINPUTHANDLER_H

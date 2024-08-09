@@ -3,14 +3,20 @@
 
 #include <vector>
 #include <string>
-#include <glob.h>
+#include "KeyboardHandler.h"
+#include "ConsoleHandler.h"
 
-class DirectoryHandler {
+class DirectoryHandler 
+{
 public:
-    // Function to list directories in the given path
     std::vector<std::string> listDirectories(const std::string& path);
+    void navigate(const std::string &initialPath);
+    bool isDirectory(const std::string& path);
+   
+private:
+    KeyboardHandler keyboardHandler;
+    ConsoleHandler consoleHandler;
     std::string trim(const std::string& str);
-    void test();
 };
 
 #endif // DIRECTORYHANDLER_H

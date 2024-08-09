@@ -1,15 +1,21 @@
 #include "ConsoleHandler.h"
 #include <iostream>
-#include <sys/stat.h>
 #include <unistd.h>
 #include <algorithm>
 #include <cctype>
 #include <locale>
 #include <string>
+#include <termios.h>
+#include <csignal>
 
-ConsoleHandler::ConsoleHandler()
+ConsoleHandler::ConsoleHandler(): rawModeEnabled(false) 
 {
-    // Constructor implementation (if needed)
+    enableRawMode();
+}
+
+ConsoleHandler::~ConsoleHandler() 
+{
+    disableRawMode();
 }
 
 void ConsoleHandler::clearScreen()
@@ -34,10 +40,75 @@ std::string ConsoleHandler::trim(const std::string &str)
     return trimmed;
 }
 
+// Enables raw mode for the terminal to read key presses without waiting for newline
+void ConsoleHandler::enableRawMode() 
+{
+    if (rawModeEnabled) return; // Already enabled
+
+    termios term;
+    if (tcgetattr(STDIN_FILENO, &term) == -1) {
+        perror("tcgetattr");
+        exit(EXIT_FAILURE);
+    }
+
+    // Save original terminal attributes for restoration later
+    static termios originalTerm = term;
+
+    // Ensure terminal settings are restored on program exit
+    static bool restoreOnExitSet = false;
+    if (!restoreOnExitSet) {
+        atexit([]() {
+            tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTerm);
+        });
+        restoreOnExitSet = true;
+    }
+
+    termios raw = term;
+    raw.c_lflag &= ~(ECHO | ICANON | ISIG); // Disable echoing, canonical mode, and signals
+    raw.c_iflag &= ~(IXON | ICRNL | BRKINT | INPCK | ISTRIP); // Disable specific input flags
+    raw.c_oflag &= ~(OPOST); // Disable output processing
+    raw.c_cflag |= (CS8); // Set character size to 8 bits
+
+    raw.c_cc[VMIN] = 0;  // Minimum number of bytes of input before read() returns
+    raw.c_cc[VTIME] = 1; // Maximum time to wait before read() returns
+
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) {
+        perror("tcsetattr");
+        exit(EXIT_FAILURE);
+    }
+
+    rawModeEnabled = true;
+}
+
+// Restores the terminal to its previous state
+void ConsoleHandler::disableRawMode() 
+{
+    if (!rawModeEnabled) return; // Already disabled
+
+    termios term;
+    if (tcgetattr(STDIN_FILENO, &term) == -1) {
+        perror("tcgetattr");
+        exit(EXIT_FAILURE);
+    }
+
+    term.c_lflag |= (ECHO | ICANON | ISIG);
+    term.c_iflag |= (IXON | ICRNL | BRKINT | INPCK | ISTRIP);
+    term.c_oflag |= (OPOST);
+    term.c_cflag &= ~(CS8);
+
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &term) == -1) {
+        perror("tcsetattr");
+        exit(EXIT_FAILURE);
+    }
+
+    rawModeEnabled = false;
+}
+
+
 void ConsoleHandler::displayItems(const std::vector<std::string> &items, int selectedIndex)
 {
     clearScreen();
-    keyboardHandler.disableRawMode();
+    disableRawMode();
 
     for (size_t i = 0; i < items.size(); ++i)
     {
@@ -51,66 +122,5 @@ void ConsoleHandler::displayItems(const std::vector<std::string> &items, int sel
         }
     }
 
-    keyboardHandler.enableRawMode();
-}
-
-void ConsoleHandler::navigate(const std::string &initialPath)
-{
-    std::string currentPath = initialPath;
-    std::vector<std::string> items;
-    int selectedIndex = 0;
-    bool running = true;
-
-    while (running)
-    {
-        items.clear();
-        items = directoryHandler.listDirectories(currentPath);
-        items.insert(items.begin(), ".."); // option to go back
-
-        displayItems(items, selectedIndex);
-
-        char key = keyboardHandler.getKeyPress();
-
-        if (key == 'q')
-        {
-            keyboardHandler.disableRawMode();
-            clearScreen();
-            running = false;
-        }
-        if (key == '\033')
-        { // Escape sequence
-            char seq[2];
-            if (read(STDIN_FILENO, &seq[0], 1) == 0)
-                break;
-            if (read(STDIN_FILENO, &seq[1], 1) == 0)
-                break;
-
-            if (seq[0] == '[')
-            {
-                switch (seq[1])
-                {
-                case 'A': // Up arrow
-                    if (selectedIndex > 0)
-                    {
-                        selectedIndex--;
-                        //displayItems(items, selectedIndex);
-                    }
-                    break;
-                case 'B': // Down arrow
-                    if (selectedIndex < items.size() - 1)
-                    {
-                        selectedIndex++;
-                        //displayItems(items, selectedIndex);
-                    }
-                    break;
-                }
-            }
-        }
-        if (key == '\n' || key == '\r')
-        { // Enter key
-            std::string selectedItem = items[selectedIndex];
-            currentPath = currentPath + "/" + selectedItem;
-            selectedIndex = 0;
-        }
-    }
+    enableRawMode();
 }

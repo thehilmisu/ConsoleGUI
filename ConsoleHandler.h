@@ -1,22 +1,23 @@
 #ifndef CONSOLEHANDLER_H
 #define CONSOLEHANDLER_H
 
-#include "DirectoryHandler.h"
-#include "KeyboardHandler.h"
 #include <string>
 #include <vector>
 
-class ConsoleHandler {
+class ConsoleHandler 
+{
 public:
     ConsoleHandler();
-    void navigate(const std::string& initialPath);
-
-private:
+    ~ConsoleHandler();
     void displayItems(const std::vector<std::string>& items, int selectedIndex);
     void clearScreen();
+    void enableRawMode();
+    void disableRawMode();
+
+private:
+    bool rawModeEnabled;
     std::string trim(const std::string& str);
-    DirectoryHandler directoryHandler;
-    KeyboardHandler keyboardHandler;
+   
 };
 
 #endif // CONSOLEHANDLER_H
