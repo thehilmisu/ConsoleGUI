@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra
-LDFLAGS = -lpcap
+LDFLAGS = 
 
 BUILD_DIR = build
 
@@ -14,7 +14,7 @@ all: ${OBJ}
 	mv *.o build/
 
 clean:
-	rm -f $(BUILD_DIR)/*.o $(TARGET) *.o *.pcap
+	rm -f $(BUILD_DIR)/*.o $(TARGET) *.o 
 	rm -Rf build
 
 .PHONY: all clean
