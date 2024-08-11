@@ -86,7 +86,8 @@ void ConsoleHandler::disableRawMode()
     if (!rawModeEnabled) return; // Already disabled
 
     termios term;
-    if (tcgetattr(STDIN_FILENO, &term) == -1) {
+    if (tcgetattr(STDIN_FILENO, &term) == -1) 
+    {
         perror("tcgetattr");
         exit(EXIT_FAILURE);
     }
@@ -96,7 +97,8 @@ void ConsoleHandler::disableRawMode()
     term.c_oflag |= (OPOST);
     term.c_cflag &= ~(CS8);
 
-    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &term) == -1) {
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &term) == -1) 
+    {
         perror("tcsetattr");
         exit(EXIT_FAILURE);
     }
@@ -109,7 +111,7 @@ void ConsoleHandler::displayItems(const std::vector<std::string> &items, int sel
 {
     clearScreen();
     disableRawMode();
-
+    
     for (size_t i = 0; i < items.size(); ++i)
     {
         if (i == selectedIndex)

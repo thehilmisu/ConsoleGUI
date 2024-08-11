@@ -5,7 +5,6 @@
 
 KeyboardHandler::KeyboardHandler() {}
 
-// Reads a single key press from the user
 char KeyboardHandler::getKeyPress() 
 {
     char c;
