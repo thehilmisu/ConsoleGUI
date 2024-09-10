@@ -2,10 +2,10 @@
 CXX = g++
 
 # Compiler flags
-CXXFLAGS = -std=c++11 -Wall -Wextra
+CXXFLAGS = -std=c++17 -Wall -Wextra
 
 # Source files
-SRCS = main.cpp Button.cpp Label.cpp
+SRCS = main.cpp Button.cpp Label.cpp TUIManager.cpp
 
 # Object files (in the build directory)
 OBJS = $(patsubst %.cpp, build/%.o, $(SRCS))

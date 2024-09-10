@@ -10,13 +10,12 @@ int main() {
 
     tuiManager.initWindow();
 
-    Label label("Hello, World!", 1);
-    Button button1("Button 1", []() { printw("\nButton 1 clicked!\n"); refresh(); }, 2);
-    Button button2("Button 2", []() { printw("\nButton 2 clicked!\n"); refresh(); }, 2);
+    // Create UI elements and add them to the manager
+    auto button1 = std::make_unique<Button>("Button 1", []() { printw("\nButton 1 clicked!\n"); refresh(); }, 2);
+    auto button2 = std::make_unique<Button>("Button 2", []() { printw("\nButton 2 clicked!\n"); refresh(); }, 2);
 
-    tuiManager.placeElement(label, 5, 5);
-    tuiManager.placeElement(button1, 5, 7);
-    tuiManager.placeElement(button2, 5, 9);
+    tuiManager.placeElement(std::move(button1), 5, 5);
+    tuiManager.placeElement(std::move(button2), 5, 7);
 
     tuiManager.drawUI();
     tuiManager.handleInput();
