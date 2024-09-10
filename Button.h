@@ -13,14 +13,14 @@ public:
     virtual ~Button() = default;
     void draw(bool selected = false) const override;
     void activate() override;
-    bool handleMouseClick(int mouseX, int mouseY) override;
-    void setPosition(int x, int y) override;
+    bool handleMouseClick(Position mouse_pos) override;
+    void setPosition(Position pos) override;
 
 private:
     std::string label;
     std::function<void()> onClick;
     int color_pair;
-    int posX, posY; // Store the position within the Button class itself
+    Position m_pos;
 };
 
 #endif

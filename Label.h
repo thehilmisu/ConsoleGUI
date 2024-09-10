@@ -11,14 +11,14 @@ public:
     Label(const std::string &text, int color_pair = 0);
     virtual ~Label() = default;
     void draw(bool selected = false) const override;
-    void setPosition(int x, int y) override;
-    bool handleMouseClick(int mouseX, int mouseY) override;
+    void setPosition(Position pos) override;
+    bool handleMouseClick(Position mouse_pos) override;
     void activate() override;
 
 private:
     std::string text;
     int color_pair;
-    int posX, posY;
+    Position m_pos;
 };
 
 #endif

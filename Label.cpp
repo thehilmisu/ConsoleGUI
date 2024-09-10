@@ -3,7 +3,7 @@
 #include <iostream>
 
 Label::Label(const std::string &text, int color_pair)
-    : text(text), color_pair(color_pair), posX(0), posY(0) {}
+    : text(text), color_pair(color_pair), m_pos{0,0} {}
 
 void Label::draw(bool selected) const
 {
@@ -12,7 +12,7 @@ void Label::draw(bool selected) const
         attron(A_REVERSE);
     }
     attron(COLOR_PAIR(color_pair));
-    mvprintw(posY, posX, "%s", text.c_str());
+    mvprintw(m_pos.y, m_pos.x, "%s", text.c_str());
     attroff(COLOR_PAIR(color_pair));
     if (selected)
     {
@@ -20,15 +20,14 @@ void Label::draw(bool selected) const
     }
 }
 
-void Label::setPosition(int x, int y)
+void Label::setPosition(Position pos)
 {
-    posX = x;
-    posY = y;
+    m_pos = pos;
 }
 
-bool Label::handleMouseClick(int mouseX, int mouseY)
+bool Label::handleMouseClick(Position mouse_pos)
 {
-    std::cout << mouseX << mouseY << std::endl;
+    //std::cout << mouse_pos.x << mouse_pos.y << std::endl;
     return false;
 }
 

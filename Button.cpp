@@ -1,9 +1,7 @@
 #include "Button.h"
 
 Button::Button(const std::string &label, std::function<void()> onClick, int color_pair)
-    : label(label), onClick(onClick), color_pair(color_pair), posX(0), posY(0)
-{
-}
+    : label(label), onClick(onClick), color_pair(color_pair), m_pos{0,0}{}
 
 void Button::draw(bool selected) const
 {
@@ -12,7 +10,7 @@ void Button::draw(bool selected) const
         attron(A_REVERSE);
     }
     attron(COLOR_PAIR(color_pair));
-    mvprintw(posY, posX, "[ %s ]", label.c_str());
+    mvprintw(m_pos.y, m_pos.x, "[ %s ]", label.c_str());
     attroff(COLOR_PAIR(color_pair));
     if (selected)
     {
@@ -28,10 +26,10 @@ void Button::activate()
     }
 }
 
-bool Button::handleMouseClick(int mouseX, int mouseY)
+bool Button::handleMouseClick(Position mouse_pos)
 {
     int length = label.length() + 4; // 4 for "[ ]" around the label
-    if (mouseY == posY && mouseX >= posX && mouseX < posX + length)
+    if (mouse_pos.y == m_pos.y && mouse_pos.x >= m_pos.x && mouse_pos.x < m_pos.x + length)
     {
         activate();
         return true;
@@ -39,8 +37,7 @@ bool Button::handleMouseClick(int mouseX, int mouseY)
     return false;
 }
 
-void Button::setPosition(int x, int y)
+void Button::setPosition(Position pos)
 {
-    posX = x;
-    posY = y;
+    m_pos = pos;
 }

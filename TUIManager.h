@@ -6,11 +6,25 @@
 #include "UIElement.h"
 #include <ncurses.h>
 
+enum ColorPair {
+    RED_ON_BLACK = 1,
+    GREEN_ON_BLACK,
+    YELLOW_ON_BLACK,
+    BLUE_ON_BLACK,
+    MAGENTA_ON_BLACK,
+    CYAN_ON_BLACK,
+    WHITE_ON_BLACK,
+    BLACK_ON_WHITE,
+    RED_ON_WHITE,
+    GREEN_ON_WHITE,
+};
+
 class TUIManager {
 public:
     template<typename T>
-    void placeElement(std::unique_ptr<T> element, int x, int y) {
-        element->setPosition(x, y);
+
+    void placeElement(std::unique_ptr<T> element, Position pos) {
+        element->setPosition(pos);
         element->draw();
         elements.push_back(std::move(element));
     }
@@ -23,7 +37,7 @@ public:
 private:
     std::vector<std::unique_ptr<UIElement>> elements;
     size_t selectedElement = 0;
-
+    void initializeColorPairs();
     void navigate(int direction);
     void handleMouse();
 };
