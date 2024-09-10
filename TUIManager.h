@@ -17,6 +17,8 @@ enum ColorPair {
     BLACK_ON_WHITE,
     RED_ON_WHITE,
     GREEN_ON_WHITE,
+    BLUE_ON_WHITE,
+    WHITE_ON_GREEN,
 };
 
 class TUIManager {

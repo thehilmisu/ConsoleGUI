@@ -4,12 +4,12 @@
 #include <ncurses.h>
 #include <vector>
 #include <string>
-#include "UIElement.h"  
+#include "UIElement.h"
 
 class TableWidget : public UIElement {
 public:
     TableWidget(Position pos, int cols)
-        : position(pos), cols(cols), cellWidth(15), padding(3) {
+        : position(pos), cols(cols), cellWidth(20), padding(2) {
         selectedRow = 0;
         selectedCol = 0;
     }
@@ -44,7 +44,6 @@ public:
     }
 
     void draw(bool selected = false) const override {
-        drawBorders();
         drawHeaders();
         drawCells(selected);
         refresh(); // Refresh the screen after drawing
@@ -55,7 +54,7 @@ public:
     }
 
     bool handleMouseClick(Position mouse_pos) override {
-        int row = (mouse_pos.y - position.y - 1);  // Adjust for header row
+        int row = (mouse_pos.y - position.y - 2) / 2;  // Adjust for header row, line, and dashed lines
         int col = (mouse_pos.x - position.x) / cellWidth;
         if (row >= 0 && row < content.size() && col >= 0 && col < cols) {
             selectedRow = row;
@@ -95,56 +94,46 @@ private:
     std::vector<std::string> headers;
 
     void drawHeaders() const {
+        attron(A_REVERSE | COLOR_PAIR(GREEN_ON_BLACK)); // Bold and different color for headers
         for (int j = 0; j < cols; ++j) {
             int x = position.x + j * cellWidth + padding;
-            mvprintw(position.y, x, "%-*s", cellWidth - 2 * padding - 1, headers[j].c_str());
+            mvprintw(position.y, x, "%-*s", cellWidth - 2 * padding, headers[j].c_str());
         }
+        attroff(A_REVERSE | COLOR_PAIR(GREEN_ON_BLACK));
+
+        // Draw a line under the headers
+        mvhline(position.y + 1, position.x, ACS_HLINE, cols * cellWidth);
     }
 
     void drawCells(bool selected) const {
         for (size_t i = 0; i < content.size(); ++i) {
-            for (int j = 0; j < cols; ++j) {
-                drawCell(i + 1, j, (i == selectedRow && j == selectedCol) ? selected : false); // Shift by 1 to accommodate headers
+            drawCell(i * 2 + 2, i, selected); // Shift by 2 per row to accommodate headers and dashed lines
+            drawDashedLine(i * 2 + 3);        // Draw dashed line after each row
+        }
+    }
+
+    void drawCell(int row, int index, bool selected) const {
+        for (int col = 0; col < cols; ++col) {
+            int x = position.x + col * cellWidth + padding;
+            int y = position.y + row;
+
+            if (selected && index == selectedRow) {
+                attron(A_REVERSE | COLOR_PAIR(GREEN_ON_BLACK)); // Highlight selected row
+                mvprintw(y, x, "%-*s", cellWidth - 2 * padding, content[index][col].c_str());
+                attroff(A_REVERSE | COLOR_PAIR(GREEN_ON_BLACK));
+            } else {
+                attron(COLOR_PAIR(GREEN_ON_BLACK)); 
+                mvprintw(y, x, "%-*s", cellWidth - 2 * padding, content[index][col].c_str());
+                attroff(COLOR_PAIR(GREEN_ON_BLACK)); 
             }
         }
     }
 
-    void drawCell(int row, int col, bool selected) const {
-        int x = position.x + col * cellWidth + padding;
-        int y = position.y + row;
-        std::string text = content[row - 1][col]; // Adjust for header row
-
-        // Draw text within the cell
-        if (selected) {
-            attron(COLOR_PAIR(1));
-            mvprintw(y, x, "%-*s", cellWidth - 2 * padding - 1, text.c_str());
-            attroff(COLOR_PAIR(1));
-        } else {
-            attron(COLOR_PAIR(2));
-            mvprintw(y, x, "%-*s", cellWidth - 2 * padding - 1, text.c_str());
-            attroff(COLOR_PAIR(2));
-        }
-    }
-
-    void drawBorders() const {
-        // Draw horizontal lines
-        for (int i = 0; i <= content.size(); ++i) {  // Adjust to include the header row
-            int y = position.y + i + 1;
-            mvhline(y, position.x, '-', cols * cellWidth);
-        }
-
-        // Draw vertical lines
-        for (int j = 0; j <= cols; ++j) {
-            int x = position.x + j * cellWidth;
-            mvvline(position.y, x, '|', content.size() + 1);
-        }
-
-        // Draw corner intersections
-        for (int i = 0; i <= content.size(); ++i) {
-            for (int j = 0; j <= cols; ++j) {
-                int x = position.x + j * cellWidth;
-                int y = position.y + i + 1;
-                mvaddch(y, x, '+');
+    void drawDashedLine(int row) const {
+        int y = position.y + row; // Position the line below the current row
+        for (int x = position.x; x < position.x + cols * cellWidth; ++x) {
+            if (x % 2 == 0) { // Creating a dashed effect
+                mvaddch(y, x, '-');
             }
         }
     }

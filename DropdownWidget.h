@@ -15,7 +15,7 @@ enum class DropdownState {
 class DropdownWidget : public UIElement {
 public:
     DropdownWidget(Position pos, const std::vector<std::string>& options)
-        : position(pos), options(options), state(DropdownState::Closed), selectedIndex(0) {
+        : position(pos), options(options), state(DropdownState::Closed), selectedIndex(0), color_pair(BLUE_ON_WHITE), color_pair_selected(BLACK_ON_WHITE) {
         if (options.empty()) {
             throw std::runtime_error("Dropdown options cannot be empty.");
         }
@@ -28,7 +28,9 @@ public:
         }
 
         // Display the selected option
-        mvprintw(position.y, position.x, "%-*s", cellWidth, options[selectedIndex].c_str());
+        attron(COLOR_PAIR(color_pair_selected));
+        mvprintw(position.y, position.x, " %-*s v ", cellWidth, options[selectedIndex].c_str());
+        attroff(COLOR_PAIR(color_pair_selected));
 
         if (selected) {
             attroff(A_REVERSE);
@@ -38,7 +40,9 @@ public:
         if (state == DropdownState::Open) {
             for (size_t i = 0; i < options.size(); ++i) {
                 //if (i == selectedIndex) continue; // Skip the already displayed selected item
+                attron(COLOR_PAIR(color_pair));
                 mvprintw(position.y + i + 1, position.x, "%-*s", cellWidth, options[i].c_str());
+                attroff(COLOR_PAIR(color_pair));
             }
         }
 
@@ -88,7 +92,10 @@ private:
     std::vector<std::string> options;
     DropdownState state;
     size_t selectedIndex;
-    int cellWidth; // Width of each cell
+    int cellWidth; 
+    int color_pair;
+    int color_pair_selected;
+
 
     int calculateMaxOptionWidth() const {
         int maxWidth = 0;

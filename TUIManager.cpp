@@ -45,6 +45,8 @@ void TUIManager::initializeColorPairs() {
     init_pair(BLACK_ON_WHITE, COLOR_BLACK, COLOR_WHITE);
     init_pair(RED_ON_WHITE, COLOR_RED, COLOR_WHITE);
     init_pair(GREEN_ON_WHITE, COLOR_GREEN, COLOR_WHITE);
+    init_pair(BLUE_ON_WHITE, COLOR_BLUE, COLOR_WHITE);
+    init_pair(WHITE_ON_GREEN, COLOR_WHITE, COLOR_GREEN);
 }
 
 void TUIManager::initWindow()
