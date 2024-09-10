@@ -6,46 +6,53 @@
 #include "UIElement.h"
 #include <ncurses.h>
 
-class TUIManager {
+class TUIManager
+{
 public:
-
-    template<typename T>
-    void placeElement(T &element, int x, int y) {
+    template <typename T>
+    void placeElement(T &element, int x, int y)
+    {
         element.setPosition(x, y);
         elements.push_back(&element);
         element.draw();
     }
 
-    void drawUI() {
-        for (size_t i = 0; i < elements.size(); ++i) {
+    void drawUI()
+    {
+        for (size_t i = 0; i < elements.size(); ++i)
+        {
             elements[i]->draw(i == selectedElement);
         }
         refresh();
     }
 
-    void handleInput() {
+    void handleInput()
+    {
         int ch;
-        while ((ch = getch()) != 'q') {
-            switch (ch) {
-                case KEY_UP:
-                    navigate(-1);
-                    break;
-                case KEY_DOWN:
-                    navigate(1);
-                    break;
-                case '\n': // Enter key
-                    elements[selectedElement]->activate();
-                    break;
-                case KEY_MOUSE:
-                    handleMouse();
-                    break;
+        while ((ch = getch()) != 'q')
+        {
+            switch (ch)
+            {
+            case KEY_UP:
+                navigate(-1);
+                break;
+            case KEY_DOWN:
+                navigate(1);
+                break;
+            case '\n': // Enter key
+                elements[selectedElement]->activate();
+                break;
+            case KEY_MOUSE:
+                handleMouse();
+                break;
             }
             drawUI();
         }
     }
 
-    void initWindow(){
-        
+    void initWindow()
+    {
+
         initscr();
         start_color();
         cbreak();
@@ -58,23 +65,29 @@ public:
 
         mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
     }
-    void endWindow(){
+    void endWindow()
+    {
         endwin();
     }
 
 private:
-    std::vector<UIElement*> elements;
-    int selectedElement = 0;
+    std::vector<UIElement *> elements;
+    size_t selectedElement = 0;
 
-    void navigate(int direction) {
+    void navigate(int direction)
+    {
         selectedElement = (selectedElement + direction + elements.size()) % elements.size();
     }
 
-    void handleMouse() {
+    void handleMouse()
+    {
         MEVENT event;
-        if (getmouse(&event) == OK) {
-            for (size_t i = 0; i < elements.size(); ++i) {
-                if (elements[i]->handleMouseClick(event.x, event.y)) {
+        if (getmouse(&event) == OK)
+        {
+            for (size_t i = 0; i < elements.size(); ++i)
+            {
+                if (elements[i]->handleMouseClick(event.x, event.y))
+                {
                     selectedElement = i;
                     break;
                 }
@@ -82,6 +95,5 @@ private:
         }
     }
 };
-
 
 #endif

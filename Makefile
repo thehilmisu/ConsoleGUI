@@ -5,7 +5,7 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall -Wextra
 
 # Source files
-SRCS = main.cpp
+SRCS = main.cpp Button.cpp Label.cpp
 
 # Object files (in the build directory)
 OBJS = $(patsubst %.cpp, build/%.o, $(SRCS))
