@@ -8,7 +8,7 @@
 class Label : public UIElement
 {
 public:
-    Label(const std::string &text, int color_pair = 0);
+    Label(const std::string &text, int color_pair, const Position &pos);
     virtual ~Label() = default;
     void draw(bool selected = false) const override;
     void setPosition(Position pos) override;

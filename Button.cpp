@@ -1,7 +1,8 @@
 #include "Button.h"
 
-Button::Button(const std::string &label, std::function<void()> onClick, int color_pair)
-    : label(label), onClick(onClick), color_pair(color_pair), m_pos{0,0}{}
+Button::Button(
+      const std::string &label, std::function<void()> onClick, int color_pair, const Position &pos)
+    : label(label), onClick(onClick), color_pair(color_pair), m_pos(pos){}
 
 void Button::draw(bool selected) const
 {

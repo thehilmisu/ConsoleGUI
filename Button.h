@@ -9,7 +9,9 @@
 class Button : public UIElement
 {
 public:
-    Button(const std::string &label, std::function<void()> onClick, int color_pair = 0);
+    Button(
+        const std::string &label, std::function<void()> onClick, 
+        int color_pair, const Position &pos);
     virtual ~Button() = default;
     void draw(bool selected = false) const override;
     void activate() override;

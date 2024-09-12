@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-Label::Label(const std::string &text, int color_pair)
-    : text(text), color_pair(color_pair), m_pos{0,0} {}
+Label::Label(const std::string &text, int color_pair, const Position &pos)
+    : text(text), color_pair(color_pair), m_pos(pos) {}
 
 void Label::draw(bool selected) const
 {
