@@ -3,6 +3,7 @@
 #include "Button.h"
 #include "TableWidget.h"
 #include "DropdownWidget.h"
+#include "TabbedWidget.h"
 
 
 int main() {
@@ -30,11 +31,21 @@ int main() {
     std::vector<std::string> dropdownOptions = {"Option 1", "Option 2", "Option 3", "Option 4"};
     auto drop = std::make_unique<DropdownWidget>(dropPos, dropdownOptions);
 
+    // Position tabbedWidgetPos = {2,2};
+    // std::vector<std::string> tabLabels = {"Tab 1", "Tab 2", "Tab 3"};
+    // auto tabs = std::make_unique<TabbedWidget>(tabbedWidgetPos, tabLabels);
+    
+    // tabs->addWidgetToTab(0,table.get());
+    // tabs->addWidgetToTab(1,label.get());
+
+    //tuiManager.placeElement(std::move(tabs));
+
+
     tuiManager.placeElement(std::move(label), {0, 0});
     tuiManager.placeElement(std::move(button1), {2, 8});
     tuiManager.placeElement(std::move(button2), {2, 10});
-    tuiManager.placeElement(std::move(table), tablePos);
-    tuiManager.placeElement(std::move(drop), dropPos);
+    tuiManager.placeElement(std::move(table));
+    tuiManager.placeElement(std::move(drop));
 
 
     tuiManager.drawUI();

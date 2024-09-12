@@ -24,9 +24,14 @@ enum ColorPair {
 class TUIManager {
 public:
     template<typename T>
-
     void placeElement(std::unique_ptr<T> element, Position pos) {
         element->setPosition(pos);
+        element->draw();
+        elements.push_back(std::move(element));
+    }
+
+    template<typename T>
+    void placeElement(std::unique_ptr<T> element) {
         element->draw();
         elements.push_back(std::move(element));
     }

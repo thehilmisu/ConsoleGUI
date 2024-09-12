@@ -4,6 +4,7 @@
 #include <ncurses.h>
 #include <vector>
 #include <string>
+#include <stdexcept>
 #include "UIElement.h"
 
 class TableWidget : public UIElement {
