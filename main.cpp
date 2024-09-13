@@ -1,30 +1,39 @@
+// main.cpp
 #include "TUIManager.h"
 #include "Label.h"
 #include "Button.h"
 #include "TableWidget.h"
 #include "DropdownWidget.h"
-#include "TabbedWidget.h"
+#include <iostream>
 
+void onOptionChanged(const std::string &text, UIElement* element) {
+    element->setText(text);
+}
 
 int main() {
-    
-    TUIManager tuiManager;
 
+    // Instantiate TUIManager globally to access it in the callback function
+    TUIManager tuiManager;
+    
+    // Initialize the TUIManager and ncurses
     tuiManager.initWindow();
 
-    Position btn1 = {2, 8};
-    Position btn2 = {2, 10};
-    Position labelpos = {0, 0};
-    auto button1 = std::make_unique<Button>("Button 1", []() { printw("\nButton 1 clicked!\n"); refresh(); }, RED_ON_BLACK,btn1);
-    auto button2 = std::make_unique<Button>("Button 2", []() { printw("\nButton 2 clicked!\n"); refresh(); }, RED_ON_BLACK,btn2);
-    auto label = std::make_unique<Label>("Test label", GREEN_ON_BLACK, labelpos);
+    // Create buttons
+    Position btn1Pos = {2, 8};
+    Position btn2Pos = {2, 10};
+    auto button1 = std::make_shared<Button>("Button 1", []() { printw("\nButton 1 clicked!\n"); refresh(); }, RED_ON_BLACK, btn1Pos);
+    auto button2 = std::make_shared<Button>("Button 2", []() { printw("\nButton 2 clicked!\n"); refresh(); }, RED_ON_BLACK, btn2Pos);
 
+
+
+    // Create a Label object globally to access it in the callback function
+    Position labelPos = {0, 0};
+    auto label = std::make_shared<Label>("Test label", GREEN_ON_BLACK, labelPos);
+
+    // Create a TableWidget
     Position tablePos = {40, 2};
-    auto table = std::make_unique<TableWidget>(tablePos, 3);  //3 columns
-
+    auto table = std::make_shared<TableWidget>(tablePos, 3);  // 3 columns
     table->setHeaders({"Header 1", "Header 2", "Header 3"});
-
-    // Add rows dynamically
     table->addRow({"Item 1", "Item 2", "Item 3"});
     table->addRow({"Item 4", "Item 5", "Item 6"});
     table->addRow({"Item 7", "Item 8", "Item 9"});
@@ -32,29 +41,27 @@ int main() {
     // Create a DropdownWidget
     Position dropPos = {2, 2};
     std::vector<std::string> dropdownOptions = {"Option 1", "Option 2", "Option 3", "Option 4"};
-    auto drop = std::make_unique<DropdownWidget>(dropPos, dropdownOptions);
+    auto dropdown = std::make_shared<DropdownWidget>(dropPos, dropdownOptions);
 
-    // Position tabbedWidgetPos = {2,2};
-    // std::vector<std::string> tabLabels = {"Tab 1", "Tab 2", "Tab 3"};
-    // auto tabs = std::make_unique<TabbedWidget>(tabbedWidgetPos, tabLabels);
-    
-    // tabs->addWidgetToTab(0,table.get());
-    // tabs->addWidgetToTab(1,label.get());
+    // Connect the onDropdownOptionSelected function to the dropdown's onOptionSelected signal
+    dropdown->onOptionsSelected.connect([label](const std::string& option) {
+        //label->setText(option);
+        onOptionChanged(option, label.get());
+    });
 
-    //tuiManager.placeElement(std::move(tabs));
+    // Place UI elements into the TUIManager
+    tuiManager.placeElement(label);           // Place the label
+    tuiManager.placeElement(button1);        // Place the first button
+    tuiManager.placeElement(button2);        // Place the second button
+    tuiManager.placeElement(table);          // Place the table
+    tuiManager.placeElement(dropdown);       // Place the dropdown
 
-    tuiManager.placeElement(std::move(label));
-    tuiManager.placeElement(std::move(button1));
-    tuiManager.placeElement(std::move(button2));
-    tuiManager.placeElement(std::move(table));
-    tuiManager.placeElement(std::move(drop));
-
+    // Draw the UI and start handling user input
     tuiManager.drawUI();
     tuiManager.handleInput();
 
+    // End the ncurses window
     tuiManager.endWindow();
-    
+
     return 0;
 }
-
-

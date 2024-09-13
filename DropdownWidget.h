@@ -88,6 +88,8 @@ public:
         return options[selectedIndex];
     }
 
+    Signal<std::string> onOptionsSelected;
+
 private:
     Position position;
     std::vector<std::string> options;
@@ -120,6 +122,7 @@ private:
         if (optionIndex >= 0 && optionIndex < options.size() && mouse_pos.x >= position.x && mouse_pos.x < position.x + cellWidth) {
             selectedIndex = optionIndex;
             state = DropdownState::OptionSelected;
+            onOptionsSelected.emit(options[selectedIndex]);
             clearDropdownOptions(); // Clear the dropdown area before closing
             state = DropdownState::Closed;
             draw(true);
@@ -132,6 +135,7 @@ private:
 
     void handleOptionSelectedState(Position mouse_pos) {
         clearDropdownOptions(); // Clear the dropdown area before closing
+                
         state = DropdownState::Closed;
         draw(true);
     }
